@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.39.8
-Release:       3
+Release:       4
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -28,9 +28,6 @@ BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffut
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
 BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs
-%ifnarch aarch64
-BuildRequires: zfs-fuse
-%endif
 %ifarch x86_64
 BuildRequires: syslinux syslinux-extlinux
 %endif
@@ -64,10 +61,6 @@ Provides:      %{name}-ufs%{?_isa} %{name}-ufs
 Obsoletes:     %{name}-ufs
 Provides:      %{name}-xfs%{?_isa} %{name}-xfs
 Obsoletes:     %{name}-xfs
-%ifnarch aarch64
-Provides:      %{name}-zfs%{?_isa} %{name}-zfs
-Obsoletes:     %{name}-zfs
-%endif
 Provides:      %{name}-tools-c%{?_isa} %{name}-tools-c
 Obsoletes:     %{name}-tools-c
 Provides:      %{name}-tools%{?_isa} %{name}-tools
@@ -146,26 +139,11 @@ This package includes python 3 bindings for %{name}.
 
 %package -n ruby-%{name}
 Summary:       Ruby bindings for %{name}
-Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}, ruby(release), ruby, ruby(guestfs) = %{version}
+Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}, ruby(release), ruby
+Provides:      ruby(guestfs) = %{version}
 
 %description -n ruby-%{name}
 This package includes ruby bindings for %{name}.
-
-%package java
-Summary:       Java bindings for %{name}
-Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}, java-headless >= 1.5.0, jpackage-utils
-Provides:      %{name}-javadoc%{?_isa} %{name}-javadoc
-Obsoletes:     %{name}-javadoc
-
-%description java
-This package includes java bindings for %{name}.
-
-%package java-devel
-Summary:       Development files of java bindings for %{name}
-Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}, %{name}-java = %{epoch}:%{version}-%{release}
-
-%description java-devel
-This package includes development files of java bindings for %{name}.
 
 %package -n php-%{name}
 Summary:       PHP bindings for %{name}
@@ -237,7 +215,8 @@ fi
 %global localconfigure \
   %{configure} \\\
     --with-default-backend=libvirt \\\
-    --with-extra="fedora=%{fedora},release=%{release},libvirt" \\\
+    --with-extra="libvirt" \\\
+    --without-java \\\
     $extra
 %global localconfigure %{localconfigure} --disable-golang
 
@@ -285,8 +264,6 @@ find $RPM_BUILD_ROOT -name perllocal.pod -delete
 find $RPM_BUILD_ROOT -name '*.bs' -delete
 find $RPM_BUILD_ROOT -name 'bindtests.pl' -delete
 
-mv $RPM_BUILD_ROOT%{_datadir}/java/%{name}-%{version}.jar $RPM_BUILD_ROOT%{_datadir}/java/%{name}.jar
-
 mv $RPM_BUILD_ROOT%{_docdir}/libguestfs installed-docs
 gzip --best installed-docs/*.xml
 
@@ -319,9 +296,6 @@ move_to strace          zz-packages-rescue
 move_to vim-minimal     zz-packages-rescue
 move_to rsync           zz-packages-rsync
 move_to xfsprogs        zz-packages-xfs
-%ifnarch aarch64
-move_to zfs-fuse        zz-packages-zfs
-%endif
 
 
 sed 's/^kernel-.*/kernel/' < packages > packages-t
@@ -330,11 +304,6 @@ cd -
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
 install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
-
-install -d $RPM_BUILD_ROOT%{_datadir}/virt-tools
-cd $RPM_BUILD_ROOT%{_datadir}/virt-tools
-ln -sf /usr/i686-w64-mingw32/sys-root/mingw/bin/rhsrvany.exe
-cd -
 
 rm -rf $RPM_BUILD_ROOT%{_libdir}/ocaml/v2v_test_harness
 rm -rf $RPM_BUILD_ROOT%{_libdir}/ocaml/stublibs/dllv2v_test_harness*
@@ -366,9 +335,6 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %{_datadir}/virt-*
 %{_libdir}/virt-*
 %{_libdir}/guestfs/
-%ifarch aarch64
-%exclude %{_libdir}/guestfs/supermin.d/zz-packages-zfs
-%endif
 %{_libdir}/libguestfs.so.*
 %config(noreplace) %{_sysconfdir}/libguestfs-tools.conf
 %{_sysconfdir}/virt-builder
@@ -424,15 +390,6 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %{ruby_vendorlibdir}/guestfs.rb
 %{ruby_vendorarchdir}/_guestfs.so
 
-%files java
-%{_libdir}/libguestfs_jni*.so.*
-%{_datadir}/java/*.jar
-%{_javadocdir}/%{name}
-
-%files java-devel
-%doc java/examples/*.java
-%{_libdir}/libguestfs_jni*.so
-
 %files -n php-%{name}
 %doc php/README-PHP
 %dir %{_sysconfdir}/php.d
@@ -465,6 +422,12 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Sat Mar 7 2020 hy <eulerstoragemt@huawei.com> - 1:1.39.8-4
+- Type:NA
+- ID:NA
+- SUG:NA
+- DESC:Remove Java bingdings, zz-packages-zfs command and rhsrvany.exe from mingw32-srvany.
+
 * Mon Dec 16 2019 zoujing<zoujing13@huawei.com> - 1:1.39.8-3
 - Type:NA
 - ID:NA

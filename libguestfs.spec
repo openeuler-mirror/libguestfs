@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.39.8
-Release:       4
+Release:       5
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -33,7 +33,7 @@ BuildRequires: syslinux syslinux-extlinux
 %endif
 Requires:      supermin >= 5.1.18, augeas-libs%{?_isa} >= 1.7.0, libacl%{?_isa}, libcap%{?_isa}, hivex%{?_isa}, pcre%{?_isa}, libselinux%{?_isa}, systemd-libs%{?_isa}
 Requires:      yajl%{?_isa}, libdb-utils, fuse, /usr/bin/qemu-img, libvirt-daemon-kvm >= 0.10.2-3, selinux-policy >= 3.11.1-63, bundled(gnulib), /usr/bin/hexedit, binutils
-Requires:      /usr/bin/less, /usr/bin/vi, gnupg2, xz, curl, perl(Sys::Virt), perl(Win::Hivex) >= 1.2.7, gawk, gzip, unzip, /usr/bin/virsh, mingw32-srvany >= 1.0-13
+Requires:      /usr/bin/less, /usr/bin/vi, gnupg2, xz, curl, perl(Sys::Virt), perl(Win::Hivex) >= 1.2.7, gawk, gzip, unzip, /usr/bin/virsh
 Suggests:      osinfo-db
 Recommends:    libguestfs-xfs, nbdkit, nbdkit-plugin-python3, nbdkit-plugin-vddk
 Conflicts:     libguestfs-winsupport
@@ -422,6 +422,12 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Mon Mar 9 2020 hy <eulerstoragemt@huawei.com> - 1:1.39.8-5
+- Type:NA
+- ID:NA
+- SUG:NA
+- DESC: delete the unused require mingw32-srvany
+
 * Sat Mar 7 2020 hy <eulerstoragemt@huawei.com> - 1:1.39.8-4
 - Type:NA
 - ID:NA

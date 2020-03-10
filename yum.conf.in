@@ -1,6 +1,7 @@
 [main]
 cachedir=@PWD@/cachedir
-debuglevel=1
+keepcache=0
+debuglevel=2
 logfile=@PWD@/yum.log
 retries=20
 obsoletes=1

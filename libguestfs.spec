@@ -3,16 +3,15 @@
 %undefine _strict_symbol_defs_build
 
 Name:          libguestfs
-Version:       1.39.8
-Release:       5
+Version:       1.40.2
+Release:       6
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
 URL:           http://libguestfs.org/
-Source0:       http://libguestfs.org/download/1.38-stable/%{name}-%{version}.tar.gz
-Source1:       README-replacement.in
-Source2:       guestfish.sh
-Source3:       yum.conf.in
+Source0:       http://download.libguestfs.org/1.40-stable/libguestfs-1.40.2.tar.gz
+Source1:       guestfish.sh
+Source2:       yum.conf.in
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -39,40 +38,40 @@ Recommends:    libguestfs-xfs, nbdkit, nbdkit-plugin-python3, nbdkit-plugin-vddk
 Conflicts:     libguestfs-winsupport
 %ifarch aarch64 x86_64
 Provides:      %{name}-benchmarking%{?_isa} %{name}-benchmarking
-Obsoletes:     %{name}-benchmarking
+Obsoletes:     %{name}-benchmarking < %{version}-%{release}
 %endif
 Provides:      %{name}-forensics%{?_isa} %{name}-forensics
-Obsoletes:     %{name}-forensics
+Obsoletes:     %{name}-forensics < %{version}-%{release}
 Provides:      %{name}-gfs2%{?_isa} %{name}-gfs2
-Obsoletes:     %{name}-gfs2
+Obsoletes:     %{name}-gfs2 < %{version}-%{release}
 Provides:      %{name}-hfsplus%{?_isa} %{name}-hfsplus
-Obsoletes:     %{name}-hfsplus
+Obsoletes:     %{name}-hfsplus < %{version}-%{release}
 Provides:      %{name}-jfs%{?_isa} %{name}-jfs
-Obsoletes:     %{name}-jfs
+Obsoletes:     %{name}-jfs < %{version}-%{release}
 Provides:      %{name}-nilfs%{?_isa} %{name}-nilfs
-Obsoletes:     %{name}-nilfs
+Obsoletes:     %{name}-nilfs < %{version}-%{release}
 Provides:      %{name}-reiserfs%{?_isa} %{name}-reiserfs
-Obsoletes:     %{name}-reiserfs
+Obsoletes:     %{name}-reiserfs < %{version}-%{release}
 Provides:      %{name}-rsync%{?_isa} %{name}-rsync
-Obsoletes:     %{name}-rsync
+Obsoletes:     %{name}-rsync < %{version}-%{release}
 Provides:      %{name}-rescue%{?_isa} %{name}-rescue
-Obsoletes:     %{name}-rescue
+Obsoletes:     %{name}-rescue < %{version}-%{release}
 Provides:      %{name}-ufs%{?_isa} %{name}-ufs
-Obsoletes:     %{name}-ufs
+Obsoletes:     %{name}-ufs < %{version}-%{release}
 Provides:      %{name}-xfs%{?_isa} %{name}-xfs
-Obsoletes:     %{name}-xfs
+Obsoletes:     %{name}-xfs < %{version}-%{release}
 Provides:      %{name}-tools-c%{?_isa} %{name}-tools-c
-Obsoletes:     %{name}-tools-c
+Obsoletes:     %{name}-tools-c < %{version}-%{release}
 Provides:      %{name}-tools%{?_isa} %{name}-tools
-Obsoletes:     %{name}-tools
+Obsoletes:     %{name}-tools < %{version}-%{release}
 Provides:      virt-dib%{?_isa} virt-dib
-Obsoletes:     virt-dib
+Obsoletes:     virt-dib < %{version}-%{release}
 Provides:      virt-v2v%{?_isa} virt-v2v
-Obsoletes:     virt-v2v
+Obsoletes:     virt-v2v < %{version}-%{release}
 Provides:      virt-p2v-maker%{?_isa} virt-p2v-maker
-Obsoletes:     virt-p2v-maker
+Obsoletes:     virt-p2v-maker < %{version}-%{release}
 Provides:      %{name}-bash-completion%{?_isa} %{name}-bash-completion
-Obsoletes:     %{name}-bash-completion
+Obsoletes:     %{name}-bash-completion < %{version}-%{release}
 
 %description
 libguestfs is a set of tools for accessing and modifying virtual machine (VM) disk images.
@@ -177,9 +176,9 @@ This package includes development files of GOBject bindings for %{name}.
 Summary:       man files for %{name}
 Requires:      man
 Provides:      %{name}-man-pages-ja%{?_isa} %{name}-man-pages-ja
-Obsoletes:     %{name}-man-pages-ja
+Obsoletes:     %{name}-man-pages-ja < %{version}-%{release}
 Provides:      %{name}-man-pages-uk%{?_isa} %{name}-man-pages-uk
-Obsoletes:     %{name}-man-pages-uk
+Obsoletes:     %{name}-man-pages-uk < %{version}-%{release}
 
 %description   help
 This package includes man files for %{name}.
@@ -195,8 +194,6 @@ if [ "$(stat -f -L -c %T .)" != "nfs" ] && [ "$(getenforce | tr '[A-Z]' '[a-z]')
     chcon --reference=/tmp tmp
 fi
 
-mv README README.orig
-sed 's/@VERSION@/%{version}/g' < %{SOURCE1} > README
 sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | EULEROS | GENERIC)/g' configure
 
 %build
@@ -208,7 +205,7 @@ else
   install -d cachedir repo
   find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
   createrepo repo
-  sed -e "s|@PWD@|$(pwd)|" %{SOURCE3} > yum.conf
+  sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
   extra=--with-supermin-packager-config=$(pwd)/yum.conf
 fi
 
@@ -303,7 +300,7 @@ mv packages-t packages
 cd -
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
-install -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
+install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
 
 rm -rf $RPM_BUILD_ROOT%{_libdir}/ocaml/v2v_test_harness
 rm -rf $RPM_BUILD_ROOT%{_libdir}/ocaml/stublibs/dllv2v_test_harness*
@@ -422,6 +419,12 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue Mar 10 2020 yangjian<yangjian79@huawei.com> - 1:1.40.2-6
+- Type:NA
+- ID:NA
+- SUG:NA
+- DESC: Change Source to available address
+
 * Mon Mar 9 2020 hy <eulerstoragemt@huawei.com> - 1:1.39.8-5
 - Type:NA
 - ID:NA

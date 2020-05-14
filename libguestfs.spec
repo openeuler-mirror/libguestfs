@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       6
+Release:       7
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -20,8 +20,8 @@ BuildRequires: zip, unzip, systemd-units, netpbm-progs, icoutils, libvirt-daemon
 BuildRequires: systemd-devel, bash-completion, /usr/bin/ping, /usr/bin/wget, curl, xz, gtk3-devel, dbus-devel, /usr/bin/qemu-img, perl(Win::Hivex)
 BuildRequires: perl(Win::Hivex::Regedit), ocaml, ocaml-ocamldoc, ocaml-findlib-devel, ocaml-gettext-devel, ocaml-ounit-devel, ocaml-libvirt-devel >= 0.6.1.4-5
 BuildRequires: lua, lua-devel, perl-devel, perl-generators, perl-macros, perl(Sys::Virt), perl(Test::More), perl(Test::Pod) >= 1.00, perl(Test::Pod::Coverage) >= 1.00
-BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python2-devel, python-unversioned-command, python2-libvirt, python3-devel
-BuildRequires: libvirt-python3, ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
+BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python2-devel, python-unversioned-command, python3-libvirt, python3-devel
+BuildRequires: ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
 BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl, attr, augeas-libs, bash, binutils, btrfs-progs, lzop, mdadm, nilfs-utils
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
@@ -194,7 +194,7 @@ if [ "$(stat -f -L -c %T .)" != "nfs" ] && [ "$(getenforce | tr '[A-Z]' '[a-z]')
     chcon --reference=/tmp tmp
 fi
 
-sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | EULEROS | GENERIC)/g' configure
+sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | OPENEULER | GENERIC)/g' configure
 
 %build
 ip addr list ||:
@@ -419,6 +419,12 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue May 12 2020 renxudong<renxudong1@huawei.com> - 1:1.40.2-7
+- Type:NA
+- ID:NA
+- SUG:NA
+- DESC: remove python2-libvirt dependency
+
 * Tue Mar 10 2020 yangjian<yangjian79@huawei.com> - 1:1.40.2-6
 - Type:NA
 - ID:NA

@@ -202,15 +202,13 @@ ip route list ||:
 if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
   extra=
 else
-  if [ ! -d "/.pkgs" ];then
-    extra=
-  else
-    install -d cachedir repo
+  install -d cachedir repo
+  if [ -d "/.pkgs" ];then
     find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
-    createrepo repo
-    sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
-    extra=--with-supermin-packager-config=$(pwd)/yum.conf
   fi
+  createrepo repo
+  sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
+  extra=--with-supermin-packager-config=$(pwd)/yum.conf
 fi
 
 %global localconfigure \

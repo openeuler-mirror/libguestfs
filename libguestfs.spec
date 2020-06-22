@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       7
+Release:       8
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -12,6 +12,7 @@ URL:           http://libguestfs.org/
 Source0:       http://download.libguestfs.org/1.40-stable/libguestfs-1.40.2.tar.gz
 Source1:       guestfish.sh
 Source2:       yum.conf.in
+Patch0000:     0001-libguestfs-PYTHON_LIBS-is-not-set-in-Python-3.8.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -20,13 +21,13 @@ BuildRequires: zip, unzip, systemd-units, netpbm-progs, icoutils, libvirt-daemon
 BuildRequires: systemd-devel, bash-completion, /usr/bin/ping, /usr/bin/wget, curl, xz, gtk3-devel, dbus-devel, /usr/bin/qemu-img, perl(Win::Hivex)
 BuildRequires: perl(Win::Hivex::Regedit), ocaml, ocaml-ocamldoc, ocaml-findlib-devel, ocaml-gettext-devel, ocaml-ounit-devel, ocaml-libvirt-devel >= 0.6.1.4-5
 BuildRequires: lua, lua-devel, perl-devel, perl-generators, perl-macros, perl(Sys::Virt), perl(Test::More), perl(Test::Pod) >= 1.00, perl(Test::Pod::Coverage) >= 1.00
-BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python2-devel, python-unversioned-command, python2-libvirt, python3-devel
+BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python2-devel, python-unversioned-command, python3-devel
 BuildRequires: libvirt-python3, ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
 BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl, attr, augeas-libs, bash, binutils, btrfs-progs, lzop, mdadm, nilfs-utils
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
-BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs
+BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel
 %ifarch x86_64
 BuildRequires: syslinux syslinux-extlinux
 %endif
@@ -377,6 +378,11 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Sat Jun 20 2020 chengzihan <chengzihan2@huawei.com> - 1:1.40.2-8
+- fix the problem: PYTHON_LIBS is not set in Python 3.8
+- and add BuildRequires: gettext-devel
+- delete BuildRequires: python2-libvirt, which is no longer provided
+
 * Fri May 29 2020 lizhenhua <lizhenhua21@huawei.com> - 1:1.40.2-7
 - Disable appliance
 

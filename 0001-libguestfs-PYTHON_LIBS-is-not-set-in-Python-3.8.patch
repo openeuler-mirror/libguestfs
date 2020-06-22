@@ -1,0 +1,65 @@
+From 5791e6ec31d267fd109e644efc76d465e019379c Mon Sep 17 00:00:00 2001
+From: chengzihan2 <chengzihan1111@163.com>
+Date: Sat, 20 Jun 2020 21:51:22 +0800
+Subject: [PATCH] libguestfs: PYTHON_LIBS is not set in Python 3.8
+
+Follow those steps:
+ - obs build
+
+and then obs build faild:
+error: File not found:
+/usr/lib64/python3.8/site-packages/libguestfsmod*.so
+/usr/lib64/python3.8/site-packages/guestfs.py
+/usr/lib64/python3.8/site-packages/__pycache__/guestfs*.py
+
+Python 3.8 no longer links C extensions to -lpython, instead relying
+on the fact that the python binary itself already contains those
+symbols. This means $PYTHON_LIBS is empty and so the Python bindings
+are not built.
+
+Use a different test to see if the python module is avaiblable.
+
+Signed-off-by: chengzihan2 <chengzihan1111@163.com>
+---
+ m4/guestfs-python.m4 | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/m4/guestfs-python.m4 b/m4/guestfs-python.m4
+index 7d4c991..befa9b1 100644
+--- a/m4/guestfs-python.m4
++++ b/m4/guestfs-python.m4
+@@ -33,14 +33,17 @@ AS_IF([test "x$enable_python" != "xno"],[
+         PYTHON_VERSION_MINOR=`$PYTHON -c "import sys; print (sys.version_info@<:@1@:>@)"`
+         PYTHON_VERSION="$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR"
+ 	AC_MSG_RESULT([$PYTHON_VERSION])
++
+         # Debian: python-2.7.pc, python-3.2.pc
+         PKG_CHECK_MODULES([PYTHON], [python-"$PYTHON_VERSION"],[
++            have_python_module=1
+             AC_SUBST([PYTHON_CFLAGS])
+             AC_SUBST([PYTHON_LIBS])
+             AC_SUBST([PYTHON_VERSION])
+             AC_DEFINE([HAVE_PYTHON],[1],[Python library found at compile time])
+         ],[
+             PKG_CHECK_MODULES([PYTHON], [python],[
++                have_python_module=1
+                 AC_SUBST([PYTHON_CFLAGS])
+                 AC_SUBST([PYTHON_LIBS])
+                 AC_SUBST([PYTHON_VERSION])
+@@ -49,6 +52,7 @@ AS_IF([test "x$enable_python" != "xno"],[
+                 AC_MSG_WARN([python $PYTHON_VERSION not found])
+             ])
+         ])
++
+         AC_MSG_CHECKING([Python prefix])
+         PYTHON_PREFIX=`$PYTHON -c "import sys; print (sys.prefix)"`
+         AC_MSG_RESULT([$PYTHON_PREFIX])
+@@ -101,4 +105,4 @@ AS_IF([test "x$enable_python" != "xno"],[
+     AC_SUBST(PYTHON_EXT_SUFFIX)
+ ])
+ AM_CONDITIONAL([HAVE_PYTHON],
+-    [test "x$PYTHON" != "xno" && test "x$PYTHON_LIBS" != "x" ])
++    [test "x$PYTHON" != "xno" && test "x$have_python_module" = "x1" ])
+-- 
+2.23.0
+

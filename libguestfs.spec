@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       7
+Release:       8
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -202,11 +202,15 @@ ip route list ||:
 if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
   extra=
 else
-  install -d cachedir repo
-  find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
-  createrepo repo
-  sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
-  extra=--with-supermin-packager-config=$(pwd)/yum.conf
+  if [ ! -d "/.pkgs" ];then
+    extra=
+  else
+    install -d cachedir repo
+    find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
+    createrepo repo
+    sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
+    extra=--with-supermin-packager-config=$(pwd)/yum.conf
+  fi
 fi
 
 %global localconfigure \
@@ -215,7 +219,7 @@ fi
     --with-extra="libvirt" \\\
     --without-java \\\
     $extra
-%global localconfigure %{localconfigure} --disable-golang
+%global localconfigure %{localconfigure} --disable-golang --disable-appliance
 
 %global localmake \
   make -j1 -C builder index-parse.c \
@@ -232,17 +236,6 @@ cp ../%{name}-%{version}/generator/.pod2text* generator/
 cd -
 
 %check
-
-%ifarch x86_64
-export LIBGUESTFS_DEBUG=1
-export LIBGUESTFS_TRACE=1
-export LIBVIRT_DEBUG=1
-
-if ! make quickcheck QUICKCHECK_TEST_TOOL_ARGS="-t 1200"; then
-    cat $HOME/.cache/libvirt/qemu/log/*
-    exit 1
-fi
-%endif
 
 %install
 gzip -9 ChangeLog
@@ -264,41 +257,7 @@ find $RPM_BUILD_ROOT -name 'bindtests.pl' -delete
 mv $RPM_BUILD_ROOT%{_docdir}/libguestfs installed-docs
 gzip --best installed-docs/*.xml
 
-cd $RPM_BUILD_ROOT%{_libdir}/guestfs/supermin.d
-function move_to
-{
-    if ! grep -Esq "^$1$" packages; then
-        echo "move_to $1: package name not found in packages file"
-    fi
-    grep -Ev "^$1$" < packages > packages-t
-    mv packages-t packages
-    echo "$1" >> "$2"
-}
-move_to curl            zz-packages-dib
-move_to debootstrap     zz-packages-dib
-move_to kpartx          zz-packages-dib
-move_to qemu-img        zz-packages-dib
-move_to which           zz-packages-dib
-move_to sleuthkit       zz-packages-forensics
-move_to gfs2-utils      zz-packages-gfs2
-move_to hfsplus-tools   zz-packages-hfsplus
-move_to jfsutils        zz-packages-jfs
-move_to nilfs-utils     zz-packages-nilfs
-move_to reiserfs-utils  zz-packages-reiserfs
-move_to iputils         zz-packages-rescue
-move_to lsof            zz-packages-rescue
-move_to openssh-clients zz-packages-rescue
-move_to pciutils        zz-packages-rescue
-move_to strace          zz-packages-rescue
-move_to vim-minimal     zz-packages-rescue
-move_to rsync           zz-packages-rsync
-move_to xfsprogs        zz-packages-xfs
-
-
-sed 's/^kernel-.*/kernel/' < packages > packages-t
-mv packages-t packages
-cd -
-
+install -d $RPM_BUILD_ROOT%{_libdir}/guestfs
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
 
@@ -346,7 +305,6 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 
 %files devel
 %{_libdir}/libguestfs.so
-%{_sbindir}/libguestfs-make-fixed-appliance
 %{_includedir}/guestfs.h
 %{_libdir}/pkgconfig/libguestfs.pc
 
@@ -419,6 +377,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue Jun 23 2020 volcanodragon <linfeilong@huawei.com> - 1:1.40.2-8
+- sync from master, Disable appliance
+
 * Tue May 12 2020 renxudong<renxudong1@huawei.com> - 1:1.40.2-7
 - Type:NA
 - ID:NA

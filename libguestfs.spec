@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       8
+Release:       9
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -12,6 +12,7 @@ URL:           http://libguestfs.org/
 Source0:       http://download.libguestfs.org/1.40-stable/libguestfs-1.40.2.tar.gz
 Source1:       guestfish.sh
 Source2:       yum.conf.in
+Patch0000:     0002-fts-remove-NOSTAT_LEAF_OPTIMIZATION.patch 
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -377,6 +378,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue Jul 21 2020 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-9
+- Del the optimization for xfs, which can lead to du and find command aborted.
+
 * Tue Jun 23 2020 volcanodragon <linfeilong@huawei.com> - 1:1.40.2-8
 - sync from master, Disable appliance
 

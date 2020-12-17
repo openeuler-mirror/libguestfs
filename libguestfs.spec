@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       9
+Release:       10
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -196,7 +196,7 @@ if [ "$(stat -f -L -c %T .)" != "nfs" ] && [ "$(getenforce | tr '[A-Z]' '[a-z]')
     chcon --reference=/tmp tmp
 fi
 
-sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | EULEROS | GENERIC)/g' configure
+sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | OPENEULER | GENERIC)/g' configure
 
 %build
 ip addr list ||:
@@ -204,15 +204,11 @@ ip route list ||:
 if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
   extra=
 else
-  if [ ! -d "/.pkgs" ];then
-    extra=
-  else
-    install -d cachedir repo
-    find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
-    createrepo repo
-    sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
-    extra=--with-supermin-packager-config=$(pwd)/yum.conf
-  fi
+  mkdir cachedir repo
+  find /var/cache/{dnf,yum} -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
+  createrepo repo
+  sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
+  extra=--with-supermin-packager-config=$(pwd)/yum.conf
 fi
 
 %global localconfigure \
@@ -221,7 +217,7 @@ fi
     --with-extra="libvirt" \\\
     --without-java \\\
     $extra
-%global localconfigure %{localconfigure} --disable-golang --disable-appliance
+%global localconfigure %{localconfigure} --disable-golang
 
 %global localmake \
   make -j1 -C builder index-parse.c \
@@ -309,6 +305,7 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %{_libdir}/libguestfs.so
 %{_includedir}/guestfs.h
 %{_libdir}/pkgconfig/libguestfs.pc
+%{_sbindir}/libguestfs-make-fixed-appliance
 
 %files -n ocaml-%{name}
 %{_libdir}/ocaml/guestfs
@@ -379,6 +376,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Wed Dec 16 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-10
+- Enable appliance that is necessary
+
 * Tue Jul 21 2020 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-9
 - Del the optimization for xfs, which can lead to du and find command aborted.
 

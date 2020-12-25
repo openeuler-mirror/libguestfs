@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       9
+Release:       10
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -27,7 +27,7 @@ BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl,
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
-BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs
+BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel
 %ifarch x86_64
 BuildRequires: syslinux syslinux-extlinux
 %endif
@@ -203,15 +203,11 @@ ip route list ||:
 if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
   extra=
 else
-  if [ ! -d "/.pkgs" ];then
-    extra=
-  else
-    install -d cachedir repo
-    find /.pkgs/ -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
-    createrepo repo
-    sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
-    extra=--with-supermin-packager-config=$(pwd)/yum.conf
-  fi
+  mkdir cachedir repo
+  find /var/cache/{dnf,yum} -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
+  createrepo repo
+  sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
+  extra=--with-supermin-packager-config=$(pwd)/yum.conf
 fi
 
 %global localconfigure \
@@ -220,7 +216,7 @@ fi
     --with-extra="libvirt" \\\
     --without-java \\\
     $extra
-%global localconfigure %{localconfigure} --disable-golang --disable-appliance
+%global localconfigure %{localconfigure} --disable-golang
 
 %global localmake \
   make -j1 -C builder index-parse.c \
@@ -308,6 +304,7 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %{_libdir}/libguestfs.so
 %{_includedir}/guestfs.h
 %{_libdir}/pkgconfig/libguestfs.pc
+%{_sbindir}/libguestfs-make-fixed-appliance
 
 %files -n ocaml-%{name}
 %{_libdir}/ocaml/guestfs
@@ -378,6 +375,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Wed Dec 16 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-10
+- Enable appliance that is necessary
+
 * Tue Jul 21 2020 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-9
 - Del the optimization for xfs, which can lead to du and find command aborted.
 

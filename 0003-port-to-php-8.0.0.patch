@@ -1,0 +1,72 @@
+From 4e54db3b1f9560c05bf44ae1c5caf56a610ba878 Mon Sep 17 00:00:00 2001
+From: maminjie <maminjie1@huawei.com>
+Date: Thu, 4 Feb 2021 09:41:12 +0800
+Subject: [PATCH] port to php 8.0.0
+
+---
+ generator/php.ml | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/generator/php.ml b/generator/php.ml
+index e07813f..b2da116 100644
+--- a/generator/php.ml
++++ b/generator/php.ml
+@@ -96,7 +96,7 @@ static int res_guestfs_h;
+ 
+ #if ZEND_MODULE_API_NO >= 20151012
+ # define GUESTFS_RETURN_STRING(x, duplicate) \\
+-    do { if (duplicate) RETURN_STRING(x) else { RETVAL_STRING(x); efree ((char *)x); return; } } while (0)
++    do { if (duplicate) { RETURN_STRING(x); } else { RETVAL_STRING(x); efree ((char *)x); return; } } while (0)
+ # define guestfs_add_assoc_string(arg, key, str, dup) \\
+     add_assoc_string(arg, key, str)
+ # define guestfs_add_assoc_stringl(arg, key, str, len, dup) \\
+@@ -177,7 +177,7 @@ static void
+ guestfs_php_handle_dtor (zend_resource *rsrc)
+ #else
+ static void
+-guestfs_php_handle_dtor (zend_rsrc_list_entry *rsrc TSRMLS_DC)
++guestfs_php_handle_dtor (zend_rsrc_list_entry *rsrc)
+ #endif
+ {
+   guestfs_h *g = (guestfs_h *) rsrc->ptr;
+@@ -193,13 +193,16 @@ PHP_MINIT_FUNCTION (guestfs_php)
+   return SUCCESS;
+ }
+ 
++ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
++ZEND_END_ARG_INFO()
++
+ static zend_function_entry guestfs_php_functions[] = {
+-  PHP_FE (guestfs_create, NULL)
+-  PHP_FE (guestfs_last_error, NULL)
++  PHP_FE (guestfs_create, arginfo_void)
++  PHP_FE (guestfs_last_error, arginfo_void)
+ ";
+ 
+   List.iter (
+-    fun { name } -> pr "  PHP_FE (guestfs_%s, NULL)\n" name
++    fun { name } -> pr "  PHP_FE (guestfs_%s, arginfo_void)\n" name
+   ) (actions |> external_functions |> sort);
+ 
+   pr "  { NULL, NULL, NULL }
+@@ -247,7 +250,7 @@ PHP_FUNCTION (guestfs_last_error)
+   zval *z_g;
+   guestfs_h *g;
+ 
+-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, \"r\",
++  if (zend_parse_parameters (ZEND_NUM_ARGS(), \"r\",
+                              &z_g) == FAILURE) {
+     RETURN_FALSE;
+   }
+@@ -353,7 +356,7 @@ PHP_FUNCTION (guestfs_last_error)
+             )
+         else param_string in
+ 
+-      pr "  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, \"r%s\",\n"
++      pr "  if (zend_parse_parameters (ZEND_NUM_ARGS(), \"r%s\",\n"
+         param_string;
+       pr "        &z_g";
+       List.iter (
+-- 
+2.23.0
+

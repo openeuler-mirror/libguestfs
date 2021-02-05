@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       10
+Release:       11
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -13,6 +13,7 @@ Source0:       http://download.libguestfs.org/1.40-stable/libguestfs-1.40.2.tar.
 Source1:       guestfish.sh
 Source2:       yum.conf.in
 Patch0000:     0002-fts-remove-NOSTAT_LEAF_OPTIMIZATION.patch 
+Patch0001:     0003-port-to-php-8.0.0.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -375,6 +376,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Thu Dec 31 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-11
+- Port to php 8.0.0
+
 * Wed Dec 16 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-10
 - Enable appliance that is necessary
 

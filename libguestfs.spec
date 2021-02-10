@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       11
+Release:       12
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -23,7 +23,7 @@ BuildRequires: zip, unzip, systemd-units, netpbm-progs, icoutils, libvirt-daemon
 BuildRequires: systemd-devel, bash-completion, /usr/bin/ping, /usr/bin/wget, curl, xz, gtk3-devel, dbus-devel, /usr/bin/qemu-img, perl(Win::Hivex)
 BuildRequires: perl(Win::Hivex::Regedit), ocaml, ocaml-ocamldoc, ocaml-findlib-devel, ocaml-gettext-devel, ocaml-ounit-devel, ocaml-libvirt-devel >= 0.6.1.4-5
 BuildRequires: lua, lua-devel, perl-devel, perl-generators, perl-macros, perl(Sys::Virt), perl(Test::More), perl(Test::Pod) >= 1.00, perl(Test::Pod::Coverage) >= 1.00
-BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python2-devel, python-unversioned-command, python3-devel
+BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python3-devel
 BuildRequires: libvirt-python3, ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
 BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl, attr, augeas-libs, bash, binutils, btrfs-progs, lzop, mdadm, nilfs-utils
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
@@ -122,14 +122,6 @@ Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}, perl(:MODULE_CO
 
 %description -n perl-Sys-Guestfs
 This package includes perl bindings for %{name}.
-
-%package -n python2-%{name}
-Summary:       Python 2 bindings for %{name}
-Requires:      %{name}%{?_isa} = %{epoch}:%{version}-%{release}
-%{?python_provide:%python_provide python2-%{name}}
-
-%description -n python2-%{name}
-This package includes python 2 bindings for %{name}.
 
 %package -n python3-%{name}
 Summary:       Python 3 bindings for %{name}
@@ -328,11 +320,6 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %doc perl/examples/*.pl
 %{perl_vendorarch}/*
 
-%files -n python2-%{name}
-%doc python/examples/*.py
-%{python2_sitearch}/libguestfsmod.so
-%{python2_sitearch}/guestfs.py*
-
 %files -n python3-%{name}
 %doc python/examples/*.py
 %{python3_sitearch}/libguestfsmod*.so
@@ -377,6 +364,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Wed Feb 10 2021 baizhonggui <baizhonggui@huawei.com> - 1:1.40.2-12
+- Delete python2 subpackage
+
 * Thu Dec 31 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-11
 - Port to php 8.0.0
 

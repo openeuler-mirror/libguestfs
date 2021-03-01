@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       12
+Release:       13
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -364,6 +364,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Mon Mar 01 2021 maminjie <maminjie1@huawei.com> - 1:1.40.2-13
+- Fix php 8.0.0 warning about missing arginfo
+
 * Wed Feb 10 2021 baizhonggui <baizhonggui@huawei.com> - 1:1.40.2-12
 - Delete python2 subpackage
 

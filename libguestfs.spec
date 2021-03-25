@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       10
+Release:       11
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -200,7 +200,7 @@ sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | OPENEULER | GENERIC)/
 %build
 ip addr list ||:
 ip route list ||:
-if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
+if ping -c 3 -w 20 8.8.8.8; then
   extra=
 else
   mkdir cachedir repo
@@ -375,6 +375,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Thu Mar 25 2021 lingsheng <lingsheng@huawei.com> - 1:1.40.2-11
+- Remove wget check
+
 * Wed Dec 16 2020 maminjie <maminjie1@huawei.com> - 1:1.40.2-10
 - Enable appliance that is necessary
 

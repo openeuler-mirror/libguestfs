@@ -194,7 +194,7 @@ sed -i 's/FEDORA | RHEL | CENTOS)/FEDORA | RHEL | CENTOS | OPENEULER | GENERIC)/
 %build
 ip addr list ||:
 ip route list ||:
-if ping -c 3 -w 20 8.8.8.8 && wget http://libguestfs.org -O /dev/null; then
+if ping -c 3 -w 20 8.8.8.8; then
   extra=
 else
   mkdir cachedir repo
@@ -369,6 +369,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %changelog
 * Tue 20 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-14
 - No /var/cache/yum in build environment and add test incase no cached rpms.
+
+* Mon Mar 22 2021 lingsheng <lingsheng@huawei.com> - 1:1.40.2-14
+- Remove wget check
 
 * Mon Mar 01 2021 maminjie <maminjie1@huawei.com> - 1:1.40.2-13
 - Fix php 8.0.0 warning about missing arginfo

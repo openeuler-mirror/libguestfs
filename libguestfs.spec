@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       11
+Release:       12
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -204,7 +204,10 @@ if ping -c 3 -w 20 8.8.8.8; then
   extra=
 else
   mkdir cachedir repo
-  find /var/cache/{dnf,yum} -type f -name '*.rpm' -print0 | xargs -0 -n 1 cp -t repo
+  findres=`find /var/cache/dnf -type f -name '*.rpm' -print0`
+if [ ! -z "$findres"]; then
+  echo $find_res | xargs -0 -n 1 cp -t repo
+fi
   createrepo repo
   sed -e "s|@PWD@|$(pwd)|" %{SOURCE2} > yum.conf
   extra=--with-supermin-packager-config=$(pwd)/yum.conf
@@ -375,6 +378,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue 20 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-12
+- No /var/cache/yum in build environment and add test incase no cached rpms.
+
 * Thu Mar 25 2021 lingsheng <lingsheng@huawei.com> - 1:1.40.2-11
 - Remove wget check
 

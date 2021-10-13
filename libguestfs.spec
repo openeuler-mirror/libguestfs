@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       14
+Release:       15
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -216,18 +216,25 @@ fi
 %global localconfigure %{localconfigure} --disable-golang
 
 %global localmake \
-  make -j1 -C builder index-parse.c \
+  %make_build -C builder index-parse.c \
   %make_build V=1 INSTALLDIRS=vendor
 
+(
 %{localconfigure}
 %{localmake}
+)&
 
 cd ../%{name}-%{version}-python3
 export PYTHON=%{__python3}
+while [ ! -f ../%{name}-%{version}/generator/.pod2text* ]
+do
+  sleep 1
+done     
 cp ../%{name}-%{version}/generator/.pod2text* generator/
 %{localconfigure} --enable-python --enable-perl --disable-ruby --disable-haskell --disable-php --disable-erlang --disable-lua --disable-golang --disable-gobject
 %{localmake}
 cd -
+wait
 
 %check
 
@@ -367,6 +374,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Wed 13 Oct 2021 wuzhen <wuzhen36@huawei.com> - 1:1.40.2-15
+- Compile two packages in parallel 
+
 * Tue 20 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-14
 - No /var/cache/yum in build environment and add test incase no cached rpms.
 

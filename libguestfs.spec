@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       16
+Release:       17
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -18,6 +18,7 @@ Patch0002:     0003-port-to-php-8.0.0.patch
 Patch0003:     fix-not-striped.patch
 Patch0004:     Fix-defaut-function-compare-error.patch
 Patch0005:     Fix-verbose-error.patch
+Patch0006:     0001-tests-Use-explicit-backing-format-for-all-backing-di.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -370,6 +371,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Thu Feb 17 2022 liwu <liwu13@huawei.com> - 1:1.40.2-17
+- Fix build error of libguestfs 
+
 * Mon Jan 24 2022 xu_ping <xuping33@huawei.com> - 1:1.40.2-16
 - Use actual function Pervasives.compare to instead of default compare and omit the labels on positional arguments.
 

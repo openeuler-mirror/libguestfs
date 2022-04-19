@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       15
+Release:       16
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -15,6 +15,13 @@ Source2:       yum.conf.in
 Patch0000:     0001-libguestfs-PYTHON_LIBS-is-not-set-in-Python-3.8.patch
 Patch0001:     0002-fts-remove-NOSTAT_LEAF_OPTIMIZATION.patch
 Patch0002:     0003-port-to-php-8.0.0.patch
+Patch0003:     fix-not-striped.patch
+# https://github.com/libguestfs/libguestfs-common/commit/cc4ecbe236914f9b391ecf3815008547472632f8
+Patch0004:     Fix-defaut-function-compare-error.patch
+# https://github.com/libguestfs/libguestfs/commit/1941593585574849dd72c458535cd80b4d858266
+Patch0005:     Fix-verbose-error.patch
+# https://github.com/libguestfs/libguestfs/commit/815eab8a66ba6ae5bea7445abb0fa8b54e01e158
+Patch0006:     0001-tests-Use-explicit-backing-format-for-all-backing-di.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -29,7 +36,7 @@ BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl,
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
-BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel
+BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel binutils
 %ifarch x86_64
 BuildRequires: syslinux syslinux-extlinux
 %endif
@@ -219,10 +226,8 @@ fi
   %make_build -C builder index-parse.c \
   %make_build V=1 INSTALLDIRS=vendor
 
-(
 %{localconfigure}
 %{localmake}
-)&
 
 cd ../%{name}-%{version}-python3
 export PYTHON=%{__python3}
@@ -374,10 +379,13 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
-* Wed 13 Oct 2021 wuzhen <wuzhen36@huawei.com> - 1:1.40.2-15
+* Tue Apr 19 2022 wangkai <wangkai385@h-partners.com> - 1:1.40.2-16
+- Fix build error
+
+* Wed Oct 13 2021 wuzhen <wuzhen36@huawei.com> - 1:1.40.2-15
 - Compile two packages in parallel 
 
-* Tue 20 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-14
+* Tue Jul 20 2021 sunguoshuai <sunguoshuai@huawei.com> - 1:1.40.2-14
 - No /var/cache/yum in build environment and add test incase no cached rpms.
 
 * Mon Mar 22 2021 lingsheng <lingsheng@huawei.com> - 1:1.40.2-14

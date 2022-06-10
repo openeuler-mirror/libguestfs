@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       17
+Release:       18
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -31,7 +31,7 @@ BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextD
 BuildRequires: libvirt-python3, ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
 BuildRequires: jpackage-utils, php-devel, gobject-introspection-devel, gjs, acl, attr, augeas-libs, bash, binutils, btrfs-progs, lzop, mdadm, nilfs-utils
 BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffutils, dosfstools, e2fsprogs, file, findutils, gawk, gdisk, gfs2-utils
-BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kernel, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
+BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
 BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel binutils
 %ifarch x86_64
@@ -371,6 +371,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Thu May 26 2022 Jun Yang <jun.yang@suse.com> - 1:1.40.2-18
+- Remove unnecessary dependency of kernel package
+
 * Thu Feb 17 2022 liwu <liwu13@huawei.com> - 1:1.40.2-17
 - Fix build error of libguestfs 
 

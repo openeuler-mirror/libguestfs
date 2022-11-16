@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       18
+Release:       19
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -19,6 +19,7 @@ Patch0003:     fix-not-striped.patch
 Patch0004:     Fix-defaut-function-compare-error.patch
 Patch0005:     Fix-verbose-error.patch
 Patch0006:     0001-tests-Use-explicit-backing-format-for-all-backing-di.patch
+Patch9000:     add-some-package-to-fix-run-error.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -40,6 +41,7 @@ BuildRequires: syslinux syslinux-extlinux
 Requires:      supermin >= 5.1.18, augeas-libs%{?_isa} >= 1.7.0, libacl%{?_isa}, libcap%{?_isa}, hivex%{?_isa}, pcre%{?_isa}, libselinux%{?_isa}, systemd-libs%{?_isa}
 Requires:      yajl%{?_isa}, libdb-utils, fuse, /usr/bin/qemu-img, libvirt-daemon-kvm >= 0.10.2-3, selinux-policy >= 3.11.1-63, bundled(gnulib), /usr/bin/hexedit, binutils
 Requires:      /usr/bin/less, /usr/bin/vi, gnupg2, xz, curl, perl(Sys::Virt), perl(Win::Hivex) >= 1.2.7, gawk, gzip, unzip, /usr/bin/virsh
+
 Suggests:      osinfo-db
 Recommends:    libguestfs-xfs, nbdkit, nbdkit-plugin-python3, nbdkit-plugin-vddk
 Conflicts:     libguestfs-winsupport
@@ -371,6 +373,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue Nov 15 2022 xu_ping <xuping33@h-partners.com> - 1:1.40.2-19
+- add some packages to fix libguestfs-test-tool error
+
 * Thu May 26 2022 Jun Yang <jun.yang@suse.com> - 1:1.40.2-18
 - Remove unnecessary dependency of kernel package
 

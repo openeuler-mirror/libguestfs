@@ -1,0 +1,100 @@
+From 77c67d0e597f5408c3d005ef624ef3d417271e0e Mon Sep 17 00:00:00 2001
+From: sunguoshuai <sunguoshuai@huawei.com>
+Date: Thu, 9 Sep 2021 21:34:40 +0800
+Subject: [PATCH] fix not striped
+
+---
+ libguestfs/configure | 28 +  1 -
+ libguestfs/m4/guestfs-appliance.m4 | 22 +  1 -
+ 2 files changed, 50 insertions(+), 2 deletions(-)
+
+diff -ruN libguestfs/configure libguestfs-1.49.5/configure
+--- libguestfs/configure	2022-11-16 23:45:04.603664947 +0800
++++ libguestfs-1.49.5/configure	2022-11-17 01:11:33.528806347 +0800
+@@ -26381,7 +26381,7 @@
+                       fi ) | tr '[:lower:]' '[:upper:]'
+                 )"
+                 case $DISTRO in #(
+-  FEDORA | RHEL | CENTOS | ALMALINUX | CLOUDLINUX \
++  FEDORA | RHEL | CENTOS | OPENEULER | ALMALINUX | CLOUDLINUX \
+ 			 | ROCKY) :
+     DISTRO=REDHAT ;; #(
+   OPENSUSE* | SLED | SLES) :
+@@ -26395,11 +26395,37 @@
+ esac
+                 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $DISTRO (from /etc/os-release)" >&5
+ printf "%s\n" "$DISTRO (from /etc/os-release)" >&6; }
++
++elif test -f /etc/openEuler-release; then
++                echo "/etc/openEuler-release:" >&5
++                cat /etc/openEuler-release >&5
++                DISTRO="$(
++                    . /etc/openEuler-release
++                    ( if test -n "$ID_LIKE"; then
++                          echo $ID_LIKE | $AWK '{print $1}'
++                      else
++                          echo $ID
++                      fi ) | tr '[:lower:]' '[:upper:]'
++                )"
++                case $DISTRO in #(
++  FEDORA | RHEL | CENTOS | OPENEULER | ALMALINUX | CLOUDLINUX \
++			 | ROCKY) :
++    DISTRO=REDHAT ;; #(
++  OPENSUSE* | SLED | SLES) :
++    DISTRO=SUSE ;; #(
++  ARCH | MANJARO | ARTIX) :
++    DISTRO=ARCHLINUX ;; #(
++  OPENMANDRIVA) :
++    DISTRO=OPENMANDRIVA ;; #(
++  *) :
++     ;;
++esac
++                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $DISTRO (from /etc/openEuler-release)" >&5
++printf "%s\n" "$DISTRO (from /etc/openEuler-release)" >&6; }
+             else
+                 as_fn_error $? "/etc/os-release not available, please specify the distro using --with-distro=DISTRO" "$LINENO" 5
+             fi
+ 
+-
+ fi
+ 
+ 
+diff -ruN libguestfs/m4/guestfs-appliance.m4 libguestfs-1.49.5/m4/guestfs-appliance.m4
+--- libguestfs/m4/guestfs-appliance.m4	2022-11-16 23:45:04.608664963 +0800
++++ libguestfs-1.49.5/m4/guestfs-appliance.m4	2022-11-17 00:54:05.276385306 +0800
+@@ -114,13 +114,34 @@
+                       fi ) | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@'
+                 )"
+                 AS_CASE([$DISTRO],
+-                        [FEDORA | RHEL | CENTOS | ALMALINUX | CLOUDLINUX \
++                        [FEDORA | RHEL | CENTOS | OPENEULER | ALMALINUX | CLOUDLINUX \
+ 			 | ROCKY],
+                             [DISTRO=REDHAT],
+                         [OPENSUSE* | SLED | SLES],[DISTRO=SUSE],
+                         [ARCH | MANJARO | ARTIX],[DISTRO=ARCHLINUX],
+                         [OPENMANDRIVA],[DISTRO=OPENMANDRIVA])
+                 AC_MSG_RESULT([$DISTRO (from /etc/os-release)])
++
++            elif test -f /etc/openEuler-release; then
++                echo "/etc/openEuler-release:" >&AS_MESSAGE_LOG_FD
++                cat /etc/openEuler-release >&AS_MESSAGE_LOG_FD
++                DISTRO="$(
++                    . /etc/openEuler-release
++                    ( if test -n "$ID_LIKE"; then
++                          echo $ID_LIKE | $AWK '{print $1}'
++                      else
++                          echo $ID
++                      fi ) | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@'
++                )"
++                AS_CASE([$DISTRO],
++                        [FEDORA | RHEL | CENTOS | OPENEULER | ALMALINUX | CLOUDLINUX \
++			 | ROCKY],
++                            [DISTRO=REDHAT],
++                        [OPENSUSE* | SLED | SLES],[DISTRO=SUSE],
++                        [ARCH | MANJARO | ARTIX],[DISTRO=ARCHLINUX],
++                        [OPENMANDRIVA],[DISTRO=OPENMANDRIVA])
++                AC_MSG_RESULT([$DISTRO (from /etc/openEuler-release)])
++
+             else
+                 AC_MSG_ERROR([/etc/os-release not available, please specify the distro using --with-distro=DISTRO])
+             fi

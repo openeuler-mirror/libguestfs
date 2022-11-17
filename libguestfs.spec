@@ -3,32 +3,25 @@
 %undefine _strict_symbol_defs_build
 
 Name:          libguestfs
-Version:       1.40.2
-Release:       17
+Version:       1.49.5
+Release:       1
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
 URL:           http://libguestfs.org/
-Source0:       http://download.libguestfs.org/1.40-stable/libguestfs-1.40.2.tar.gz
+Source0:       https://download.libguestfs.org/1.49-development/libguestfs-1.49.5.tar.gz
 Source1:       guestfish.sh
 Source2:       yum.conf.in
-Patch0000:     0001-libguestfs-PYTHON_LIBS-is-not-set-in-Python-3.8.patch
-Patch0001:     0002-fts-remove-NOSTAT_LEAF_OPTIMIZATION.patch
-Patch0002:     0003-port-to-php-8.0.0.patch
-Patch0003:     fix-not-striped.patch
-# https://github.com/libguestfs/libguestfs-common/commit/cc4ecbe236914f9b391ecf3815008547472632f8
-Patch0004:     Fix-defaut-function-compare-error.patch
-# https://github.com/libguestfs/libguestfs/commit/1941593585574849dd72c458535cd80b4d858266
-Patch0005:     Fix-verbose-error.patch
-# https://github.com/libguestfs/libguestfs/commit/815eab8a66ba6ae5bea7445abb0fa8b54e01e158
-Patch0006:     0001-tests-Use-explicit-backing-format-for-all-backing-di.patch
+Patch0001:     001-port-to-php-8.0.0.patch
+Patch0002:     fix-not-striped.patch
+Patch0003:     support_OPENEULER_to_configure.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
 BuildRequires: libselinux-devel, fuse, fuse-devel, pcre-devel, file-devel, libvirt-devel, gperf, flex, bison, libdb-utils, cpio, libconfig-devel, xz-devel
 BuildRequires: zip, unzip, systemd-units, netpbm-progs, icoutils, libvirt-daemon-qemu, perl(Expect), libacl-devel, libcap-devel, libldm-devel, jansson-devel
-BuildRequires: systemd-devel, bash-completion, /usr/bin/ping, /usr/bin/wget, curl, xz, gtk3-devel, dbus-devel, /usr/bin/qemu-img, perl(Win::Hivex)
-BuildRequires: perl(Win::Hivex::Regedit), ocaml, ocaml-ocamldoc, ocaml-findlib-devel, ocaml-gettext-devel, ocaml-ounit-devel, ocaml-libvirt-devel >= 0.6.1.4-5
+BuildRequires: systemd-devel, bash-completion, /usr/bin/ping, /usr/bin/wget, curl, xz, gtk3-devel, dbus-devel, /usr/bin/qemu-img
+BuildRequires:  ocaml, ocaml-ocamldoc, ocaml-findlib-devel, ocaml-gettext-devel, ocaml-ounit-devel, ocaml-libvirt-devel >= 0.6.1.4-5
 BuildRequires: lua, lua-devel, perl-devel, perl-generators, perl-macros, perl(Sys::Virt), perl(Test::More), perl(Test::Pod) >= 1.00, perl(Test::Pod::Coverage) >= 1.00
 BuildRequires: perl(Module::Build), perl(ExtUtils::CBuilder), perl(Locale::TextDomain), python3-devel
 BuildRequires: libvirt-python3, ruby-devel, rubygem-rake, rubygem(json), rubygem(rdoc), rubygem(test-unit), ruby-irb, java-1.8.0-openjdk, java-1.8.0-openjdk-devel
@@ -42,7 +35,7 @@ BuildRequires: syslinux syslinux-extlinux
 %endif
 Requires:      supermin >= 5.1.18, augeas-libs%{?_isa} >= 1.7.0, libacl%{?_isa}, libcap%{?_isa}, hivex%{?_isa}, pcre%{?_isa}, libselinux%{?_isa}, systemd-libs%{?_isa}
 Requires:      yajl%{?_isa}, libdb-utils, fuse, /usr/bin/qemu-img, libvirt-daemon-kvm >= 0.10.2-3, selinux-policy >= 3.11.1-63, bundled(gnulib), /usr/bin/hexedit, binutils
-Requires:      /usr/bin/less, /usr/bin/vi, gnupg2, xz, curl, perl(Sys::Virt), perl(Win::Hivex) >= 1.2.7, gawk, gzip, unzip, /usr/bin/virsh
+Requires:      /usr/bin/less, /usr/bin/vi, gnupg2, xz, curl, perl(Sys::Virt),  gawk, gzip, unzip, libvirt
 Suggests:      osinfo-db
 Recommends:    libguestfs-xfs, nbdkit, nbdkit-plugin-python3, nbdkit-plugin-vddk
 Conflicts:     libguestfs-winsupport
@@ -223,7 +216,7 @@ fi
 %global localconfigure %{localconfigure} --disable-golang
 
 %global localmake \
-  %make_build -C builder index-parse.c \
+  %make_build \
   %make_build V=1 INSTALLDIRS=vendor
 
 %{localconfigure}
@@ -244,7 +237,6 @@ wait
 %check
 
 %install
-gzip -9 ChangeLog
 
 %make_install INSTALLDIRS=vendor NO_PACKLIST=1
 
@@ -260,9 +252,6 @@ find $RPM_BUILD_ROOT -name perllocal.pod -delete
 find $RPM_BUILD_ROOT -name '*.bs' -delete
 find $RPM_BUILD_ROOT -name 'bindtests.pl' -delete
 
-mv $RPM_BUILD_ROOT%{_docdir}/libguestfs installed-docs
-gzip --best installed-docs/*.xml
-
 install -d $RPM_BUILD_ROOT%{_libdir}/guestfs
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
 install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d
@@ -272,37 +261,18 @@ rm -rf $RPM_BUILD_ROOT%{_libdir}/ocaml/stublibs/dllv2v_test_harness*
 
 rm -rf ocaml/html/.gitignore
 
-%ifarch aarch64 x86_64
-libtool --mode=install install -m 0755 utils/boot-analysis/boot-analysis $RPM_BUILD_ROOT%{_bindir}/libguestfs-boot-analysis
-libtool --mode=install install -m 0755 utils/boot-benchmark/boot-benchmark $RPM_BUILD_ROOT%{_bindir}/libguestfs-boot-benchmark
-install -m 0755 utils/boot-benchmark/boot-benchmark-range.pl $RPM_BUILD_ROOT%{_bindir}/libguestfs-boot-benchmark-range.pl
-install -m 0644 utils/boot-analysis/boot-analysis.1 $RPM_BUILD_ROOT%{_mandir}/man1/libguestfs-boot-analysis.1
-install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/man1/libguestfs-boot-benchmark.1
-%endif
 
 %find_lang %{name}
 
 %files -f %{name}.lang
-%doc COPYING README AUTHORS HACKING examples/*.c installed-docs/*
+%doc COPYING README AUTHORS HACKING examples/*.c 
 %{_bindir}/libguestfs-test-tool
-%ifarch aarch64 x86_64
-%{_bindir}/libguestfs-boot-analysis
-%{_bindir}/libguestfs-boot-benchmark*
-%endif
 %{_bindir}/guest*
 %{_bindir}/virt-*
-%exclude %{_bindir}/virt-list-filesystems
-%exclude %{_bindir}/virt-list-partitions
-%exclude %{_bindir}/virt-tar
-%{_datadir}/virt-*
-%{_libdir}/virt-*
+%exclude %{_bindir}/virt-tar*
 %{_libdir}/guestfs/
 %{_libdir}/libguestfs.so.*
 %config(noreplace) %{_sysconfdir}/libguestfs-tools.conf
-%{_sysconfdir}/virt-builder
-%dir %{_sysconfdir}/xdg/virt-builder
-%dir %{_sysconfdir}/xdg/virt-builder/repos.d
-%config %{_sysconfdir}/xdg/virt-builder/repos.d/*
 %config %{_sysconfdir}/profile.d/guestfish.sh
 %dir %{_datadir}/bash-completion/completions
 %{_datadir}/bash-completion/completions/guest*
@@ -379,6 +349,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Sat Nov 12 2022 dan <fzhang@zhixundn.com> - 1:1.49.5-1
+- update to 1.49.5
+
 * Thu May 26 2022 Jun Yang <jun.yang@suse.com> - 1:1.40.2-17
 - Remove unnecessary dependency of kernel package
 

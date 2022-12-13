@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.40.2
-Release:       17
+Release:       18
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -19,6 +19,7 @@ Patch0003:     fix-not-striped.patch
 Patch0004:     Fix-defaut-function-compare-error.patch
 Patch0005:     Fix-verbose-error.patch
 Patch0006:     0001-tests-Use-explicit-backing-format-for-all-backing-di.patch
+Patch0007:     add-some-package-to-fix-run-error.patch
 
 BuildRequires: gcc-c++, rpcgen, libtirpc-devel, supermin-devel >= 5.1.18, hivex-devel >= 1.2.7-7, ocaml-hivex-devel, perl(Pod::Simple), perl(Pod::Man)
 BuildRequires: /usr/bin/pod2text, po4a, augeas-devel >= 1.7.0, readline-devel, genisoimage, libxml2-devel, createrepo, glibc-static, libselinux-utils
@@ -371,6 +372,9 @@ install -m 0644 utils/boot-benchmark/boot-benchmark.1 $RPM_BUILD_ROOT%{_mandir}/
 %exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Tue Dec 13 2022 wulei <wulei80@h-partners.com> - 1:1.40.2-18
+- add some packages to fix libguestfs-test-tool error
+
 * Thu Aug 18 2022 liyanan <liyanan32@h-partners.com> - 1:1.40.2-17
 - Fix build error of libguestfs
 - Remove unnecessary dependency of kernel package

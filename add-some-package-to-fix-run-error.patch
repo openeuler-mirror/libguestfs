@@ -1,0 +1,20 @@
+diff --git a/appliance/packagelist.in b/appliance/packagelist.in
+index 8d2e9d4..6df9de9 100644
+--- a/appliance/packagelist.in
++++ b/appliance/packagelist.in
+@@ -276,6 +276,15 @@ util-linux
+ util-linux-ng
+ xfsprogs
+ zerofree
++jansson
++augeas
++hivex
++libcap
++libldm
++libtirpc
++pcre
++libselinux
++yara
+ 
+ dnl tools needed by virt-dib
+ ifelse(REDHAT,1,

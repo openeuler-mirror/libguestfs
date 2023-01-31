@@ -1,0 +1,49 @@
+From 4e54db3b1f9560c05bf44ae1c5caf56a610ba878 Mon Sep 17 00:00:00 2001
+From: maminjie <maminjie1@huawei.com>
+Date: Thu, 4 Feb 2021 09:41:12 +0800
+Subject: [PATCH] port to php 8.0.0
+
+---
+ generator/php.ml | 17 ++++++++++-------
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+ 
+diff -ruN libguestfs/generator/php.ml libguestfs-1.49.5/generator/php.ml
+--- libguestfs/generator/php.ml	2022-11-16 02:11:11.207197930 +0800
++++ libguestfs-1.49.5/generator/php.ml	2022-11-16 02:13:35.829265696 +0800
+@@ -218,7 +218,7 @@
+ guestfs_php_handle_dtor (zend_resource *rsrc)
+ #else
+ static void
+-guestfs_php_handle_dtor (zend_rsrc_list_entry *rsrc TSRMLS_DC)
++guestfs_php_handle_dtor (zend_rsrc_list_entry *rsrc)
+ #endif
+ {
+   guestfs_h *g = (guestfs_h *) rsrc->ptr;
+@@ -234,6 +234,9 @@
+   return SUCCESS;
+ }
+ 
++ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
++ZEND_END_ARG_INFO()
++
+ static zend_function_entry guestfs_php_functions[] = {
+   PHP_FE (guestfs_create, arginfo_create)
+   PHP_FE (guestfs_last_error, arginfo_last_error)
+@@ -288,7 +291,7 @@
+   zval *z_g;
+   guestfs_h *g;
+ 
+-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, \"r\",
++  if (zend_parse_parameters (ZEND_NUM_ARGS(), \"r\",
+                              &z_g) == FAILURE) {
+     RETURN_FALSE;
+   }
+@@ -394,7 +397,7 @@
+             )
+         else param_string in
+ 
+-      pr "  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, \"r%s\",\n"
++      pr "  if (zend_parse_parameters (ZEND_NUM_ARGS(), \"r%s\",\n"
+         param_string;
+       pr "        &z_g";
+       List.iter (

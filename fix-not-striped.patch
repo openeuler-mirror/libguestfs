@@ -5,33 +5,16 @@ Subject: [PATCH] fix not striped
 
 ---
  appliance/Makefile.am | 1 +
- p2v/Makefile.am       | 1 +
- 2 files changed, 2 insertions(+)
+ 1 files changed, 1 insertions(+)
 
-diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index fc424b1..3f74636 100644
---- a/appliance/Makefile.am
-+++ b/appliance/Makefile.am
-@@ -92,6 +92,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfs_shadow.aug
- 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc tmp-d/usr/share/guestfs
+diff -ruN libguestfs/appliance/Makefile.am libguestfs-1.49.5/appliance/Makefile.am
+--- libguestfs/appliance/Makefile.am	2022-11-16 02:11:11.123199053 +0800
++++ libguestfs-1.49.5/appliance/Makefile.am	2022-11-16 02:13:36.113261902 +0800
+@@ -118,6 +118,7 @@
+ 	rm -rf tmp-d
+ 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc
  	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
- 	ln $(srcdir)/guestfs_shadow.aug tmp-d/usr/share/guestfs/guestfs_shadow.aug
 +	strip tmp-d/usr/sbin/guestfsd
  	( cd tmp-d && tar zcf - * ) > $@-t
  	rm -r tmp-d
  	mv $@-t $@
-diff --git a/p2v/Makefile.am b/p2v/Makefile.am
-index 92e2c50..a101d22 100644
---- a/p2v/Makefile.am
-+++ b/p2v/Makefile.am
-@@ -75,6 +75,7 @@ virtp2vlib_DATA = virt-p2v.xz
- 
- virt-p2v.xz: virt-p2v
- 	rm -f $@ $@-t
-+	strip $<
- 	xz --best --keep --stdout $< > $@-t
- 	mv $@-t $@
- 
--- 
-2.30.0
-

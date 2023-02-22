@@ -4,7 +4,7 @@
 
 Name:          libguestfs
 Version:       1.49.5
-Release:       1
+Release:       2
 Epoch:         1
 Summary:       A set of tools for accessing and modifying virtual machine (VM) disk images
 License:       LGPLv2+
@@ -30,6 +30,7 @@ BuildRequires: bzip2, coreutils, cpio, cryptsetup, debootstrap, dhclient, diffut
 BuildRequires: grep, gzip, hivex, iproute, iputils, jfsutils, kmod, kpartx, less, libcap, libldm, libselinux, libxml2, lsof, lsscsi, lvm2, strace
 BuildRequires: openssh-clients, parted, pciutils, pcre, policycoreutils, procps, psmisc, qemu-img, reiserfs-utils, rsync, scrub, sed, sleuthkit, squashfs-tools
 BuildRequires: systemd, tar, udev, util-linux, vim-minimal, which, xfsprogs, yajl, zerofree, hfsplus-tools, ntfs-3g, ntfsprogs gettext-devel binutils
+BuildRequires: vala
 %ifarch x86_64
 BuildRequires: syslinux syslinux-extlinux
 %endif
@@ -166,6 +167,14 @@ Requires:      %{name}-gobject = %{epoch}:%{version}-%{release}
 
 %description gobject-devel
 This package includes development files of GOBject bindings for %{name}.
+
+%package vala
+Summary:       Vala for %{name}
+Requires:      %{name}-devel
+Requires:      vala
+
+%description vala
+This package contains Vala bindings for %{name}.
 
 %package       help
 Summary:       man files for %{name}
@@ -340,15 +349,19 @@ rm -rf ocaml/html/.gitignore
 %{_datadir}/gir-1.0/Guestfs-1.0.gir
 %{_libdir}/pkgconfig/libguestfs-gobject-1.0.pc
 
+%files vala
+%{_datadir}/vala/vapi/libguestfs-gobject-1.0.deps
+%{_datadir}/vala/vapi/libguestfs-gobject-1.0.vapi
+
 %files help
 %{_mandir}/man*/*
 %lang(ja) %{_mandir}/ja/man*/*
 %lang(uk) %{_mandir}/uk/man*/*
-%exclude %{_mandir}/man1/virt-list-filesystems.1*
-%exclude %{_mandir}/man1/virt-list-partitions.1*
-%exclude %{_mandir}/man1/virt-tar.1*
 
 %changelog
+* Wed Feb 22 2023 wulei <wulei80@h-partners.com> - 1:1.49.5-2
+- Enable Vala bindings
+
 * Sat Nov 12 2022 dan <fzhang@zhixundn.com> - 1:1.49.5-1
 - update to 1.49.5
 
